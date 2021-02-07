@@ -6,16 +6,7 @@
 #
 # Example: `./create_dds.sh /usr/share/games/flightgear/OrtoPhoto/cols4/Orthophotos/`
 #
-
-# Check if NVIDIA texture tools is installed
-command -v nvcompress >/dev/null
-if [[ $? -gt 0 ]]; then
-    echo "nvcompress not available, using imagemagick";
-    nvcompress_available=false;
-else
-    echo "Using nvcompress";
-    nvcompress_available=true;
-fi
+# This is an adaptation of the script so it works on macOS.
 
 root="."; [[ -n "$1" ]] && root="$1"
 find $root -name '*.png' | while IFS= read file; do
@@ -25,11 +16,7 @@ find $root -name '*.png' | while IFS= read file; do
         echo "dds already there";
     else
         echo "convert to dds (${dir}/${name}.dds)";
-        if $nvcompress_available; then
-            nvcompress -bc1a $file ${dir}/${name}.dds.tmp;
-        else
-            convert $file -define dds:compression=DXT5 dxt5:${dir}/${name}.dds.tmp;
-        fi;
+        convert $file -define dds:compression=DXT5 dxt5:${dir}/${name}.dds.tmp;
         mv ${dir}/${name}.dds.tmp ${dir}/${name}.dds;
     fi; done; 
 
